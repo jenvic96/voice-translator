@@ -1151,9 +1151,9 @@ async function translateText(text) {
     document.getElementById('speakBtn').disabled = false;
     document.getElementById('copyBtn').style.display = 'flex';
     setStatus('ready', 'Translation complete ✓');
-    // Show ASL fingerspelling if English is involved
+    // Show ASL fingerspelling only if ASL mode is ON and translation is in English
     const tCode = TARGET_CODE_MAP[document.getElementById('targetLang').value] || '';
-    if (tCode === 'en') {
+    if (isT2TMode && tCode === 'en') {
       document.getElementById('aslPanel').classList.add('visible');
       renderASL(translation);
     } else {
@@ -1625,6 +1625,8 @@ function toggleT2T() {
   } else {
     updateFlagUI();
     setMode('mic');
+    // Hide ASL panel when ASL mode is turned off
+    document.getElementById('aslPanel').classList.remove('visible');
   }
   // Show font buttons and contrast only on step 2 + ASL mode
   updateA11yBar();
@@ -1674,11 +1676,10 @@ async function translateT2T(speaker, text) {
     const data = await response.json();
     const translation = data[0].filter(i => i && i[0]).map(i => i[0]).join('').trim();
     document.getElementById(resultId).textContent = translation;
-    // Show ASL if translation is in English
-    if (toCode === 'en' || fromCode === 'en') {
-      const engText = toCode === 'en' ? translation : text;
+    // Show ASL fingerspelling only if ASL mode is ON and translation is in English
+    if (isT2TMode && toCode === 'en') {
       document.getElementById('aslPanel').classList.add('visible');
-      renderASL(engText);
+      renderASL(translation);
     }
   } catch(e) {
     document.getElementById(resultId).textContent = 'Translation failed.';
