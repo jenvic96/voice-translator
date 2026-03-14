@@ -450,7 +450,133 @@ textarea.text-box:focus { border-color: var(--mint-dark); }
   color: var(--danger); font-family: 'DM Mono', monospace;
   font-size: 12px; margin-top: 10px; text-align: center;
 }
-.translation-result { font-size: 15px; line-height: 1.7; color: var(--text); }
+.translation-result { font-size: var(--output-font-size, 15px); line-height: 1.8; color: var(--text); }
+
+/* ── Accuracy modal ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(26,56,53,0.4);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--surface); border-radius: 24px;
+  padding: 24px; width: 100%; max-width: 560px;
+  max-height: 80vh; overflow-y: auto;
+  border: 1px solid var(--border);
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; color: var(--text); letter-spacing: -0.01em;
+}
+.modal-close {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 50%; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; color: var(--muted);
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.tier-block { margin-bottom: 16px; }
+.tier-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.tier-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.tier-name { font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 14px; color: var(--text); }
+.tier-desc { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-left: 4px; }
+.tier-flags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tier-pill {
+  font-size: 12px; padding: 4px 10px; border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── Accessibility ── */
+body.high-contrast {
+  --bg: #000000;
+  --surface: #111111;
+  --surface2: #1a1a1a;
+  --border: #444444;
+  --accent: #ff6b6b;
+  --accent-dark: #ff4444;
+  --mint: #00ffcc;
+  --mint-dark: #00ccaa;
+  --text: #ffffff;
+  --muted: #aaaaaa;
+  --cream: #1a1a1a;
+}
+
+body.high-contrast .text-box { border-width: 2px; }
+body.high-contrast .flag-btn { border: 2px solid var(--border); }
+body.high-contrast h1 { color: #ffffff; }
+
+.font-size-lg { --output-font-size: 22px !important; }
+.font-size-xl { --output-font-size: 30px !important; }
+
+/* Accessibility bar */
+.a11y-bar {
+  display: flex; align-items: center; gap: 8px;
+  position: relative; z-index: 1;
+  margin-bottom: 16px; flex-wrap: wrap; justify-content: center;
+}
+.a11y-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 12px; cursor: pointer;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.1em; color: var(--muted); transition: all 0.2s;
+}
+.a11y-btn:hover { border-color: var(--mint-dark); color: var(--text); }
+.a11y-btn.active { background: var(--mint); border-color: var(--mint-dark); color: var(--text); font-weight: 500; }
+.a11y-divider { width: 1px; height: 16px; background: var(--border); }
+
+/* ASL panel */
+.asl-panel {
+  display: none;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 16px; margin-top: 12px;
+  text-align: center;
+}
+.asl-panel.visible { display: block; }
+.asl-title {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 12px;
+}
+.asl-letters {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+}
+.asl-letter {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 8px 10px; min-width: 42px;
+}
+.asl-hand { font-size: 22px; }
+.asl-char {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--muted); font-weight: 500;
+}
+
+/* Text-to-text mode */
+.t2t-input {
+  width: 100%; background: var(--surface2); border: 1.5px solid var(--accent);
+  border-radius: 16px; padding: 16px; min-height: 90px;
+  font-family: 'DM Mono', monospace; font-size: 14px;
+  line-height: 1.7; color: var(--text); resize: vertical; outline: none;
+  transition: border-color 0.2s; margin-bottom: 8px;
+}
+.t2t-input:focus { border-color: var(--accent-dark); }
+.t2t-label {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.t2t-label.s1 { color: var(--accent); }
+.t2t-label.s2 { color: var(--mint-dark); }
 .translation-result.loading { color: var(--muted); font-style: italic; font-size: 13px; }
 </style>
 </head>
@@ -482,6 +608,16 @@ textarea.text-box:focus { border-color: var(--mint-dark); }
   <p class="subtitle">speak → interpret &nbsp;·&nbsp; write → translate</p>
 </header>
 
+<!-- Accessibility bar -->
+<div class="a11y-bar">
+  <button class="a11y-btn" id="btnFontNormal" onclick="setFontSize('normal')" title="Normal text" style="display:none">A</button>
+  <button class="a11y-btn" id="btnFontLg" onclick="setFontSize('lg')" title="Large text" style="display:none">A+</button>
+  <button class="a11y-btn" id="btnFontXl" onclick="setFontSize('xl')" title="Extra large text" style="display:none">A++</button>
+  <div class="a11y-divider" id="fontDivider" style="display:none"></div>
+  <button class="a11y-btn" id="btnT2T" onclick="toggleT2T()" title="Text-to-text mode">🤟 ASL Mode</button>
+  <button class="a11y-btn" id="btnContrast" onclick="toggleContrast()" title="High contrast" style="display:none">⬤ ASL Contrast</button>
+</div>
+
 <!-- Step indicator -->
 <div class="step-indicator">
   <div class="step-pill active" id="pill1">
@@ -497,7 +633,10 @@ textarea.text-box:focus { border-color: var(--mint-dark); }
 
 <!-- ── STEP 1 card ── -->
 <div class="card" id="step1Card">
-  <div class="step1-title">Who is speaking?</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+    <div class="step1-title">Who is speaking?</div>
+    <button onclick="document.getElementById('accuracyModal').classList.add('open')" style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--muted);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--mint-dark)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">ℹ️ Accuracy</button>
+  </div>
   <div class="step1-sub">SELECT EACH SPEAKER'S LANGUAGE</div>
 
   <div class="speakers">
@@ -526,47 +665,52 @@ textarea.text-box:focus { border-color: var(--mint-dark); }
 
   <div class="flag-instruction" id="flagInstruction">Tap a flag to set <span style="color:var(--accent)">Speaker 1</span> language</div>
   <div class="flag-grid" id="flagPicker">
+    <!-- Tier 1: Excellent -->
     <button class="flag-btn selected-source" data-source="en-US" data-target="English" data-flag="🇺🇸" data-name="English" onclick="selectLang(this)">🇺🇸<span class="flag-label">English</span></button>
     <button class="flag-btn selected-target" data-source="es-US" data-target="Spanish" data-flag="🇲🇽" data-name="Spanish" onclick="selectLang(this)">🇲🇽<span class="flag-label">Spanish</span></button>
     <button class="flag-btn" data-source="fr-FR" data-target="French" data-flag="🇫🇷" data-name="French" onclick="selectLang(this)">🇫🇷<span class="flag-label">French</span></button>
-    <button class="flag-btn" data-source="pt-BR" data-target="Portuguese" data-flag="🇧🇷" data-name="Portuguese" onclick="selectLang(this)">🇧🇷<span class="flag-label">Portug.</span></button>
     <button class="flag-btn" data-source="de-DE" data-target="German" data-flag="🇩🇪" data-name="German" onclick="selectLang(this)">🇩🇪<span class="flag-label">German</span></button>
+    <button class="flag-btn" data-source="pt-BR" data-target="Portuguese" data-flag="🇧🇷" data-name="Portuguese" onclick="selectLang(this)">🇧🇷<span class="flag-label">Portug.</span></button>
     <button class="flag-btn" data-source="it-IT" data-target="Italian" data-flag="🇮🇹" data-name="Italian" onclick="selectLang(this)">🇮🇹<span class="flag-label">Italian</span></button>
     <button class="flag-btn" data-source="ja-JP" data-target="Japanese" data-flag="🇯🇵" data-name="Japanese" onclick="selectLang(this)">🇯🇵<span class="flag-label">Japanese</span></button>
     <button class="flag-btn" data-source="zh-CN" data-target="Chinese (Simplified)" data-flag="🇨🇳" data-name="Chinese" onclick="selectLang(this)">🇨🇳<span class="flag-label">Chinese</span></button>
     <button class="flag-btn" data-source="ko-KR" data-target="Korean" data-flag="🇰🇷" data-name="Korean" onclick="selectLang(this)">🇰🇷<span class="flag-label">Korean</span></button>
-    <button class="flag-btn" data-source="ar-SA" data-target="Arabic" data-flag="🇸🇦" data-name="Arabic" onclick="selectLang(this)">🇸🇦<span class="flag-label">Arabic</span></button>
     <button class="flag-btn" data-source="ru-RU" data-target="Russian" data-flag="🇷🇺" data-name="Russian" onclick="selectLang(this)">🇷🇺<span class="flag-label">Russian</span></button>
-    <button class="flag-btn" data-source="hi-IN" data-target="Hindi" data-flag="🇮🇳" data-name="Hindi" onclick="selectLang(this)">🇮🇳<span class="flag-label">Hindi</span></button>
+    <button class="flag-btn" data-source="ar-SA" data-target="Arabic" data-flag="🇸🇦" data-name="Arabic" onclick="selectLang(this)">🇸🇦<span class="flag-label">Arabic</span></button>
+    <!-- Tier 2: Good -->
     <button class="flag-btn" data-source="nl-NL" data-target="Dutch" data-flag="🇳🇱" data-name="Dutch" onclick="selectLang(this)">🇳🇱<span class="flag-label">Dutch</span></button>
     <button class="flag-btn" data-source="nl-BE" data-target="Dutch (Belgium)" data-flag="🇧🇪" data-name="Dutch (BE)" onclick="selectLang(this)">🇧🇪<span class="flag-label">Flemish</span></button>
     <button class="flag-btn" data-source="pl-PL" data-target="Polish" data-flag="🇵🇱" data-name="Polish" onclick="selectLang(this)">🇵🇱<span class="flag-label">Polish</span></button>
     <button class="flag-btn" data-source="sv-SE" data-target="Swedish" data-flag="🇸🇪" data-name="Swedish" onclick="selectLang(this)">🇸🇪<span class="flag-label">Swedish</span></button>
     <button class="flag-btn" data-source="tr-TR" data-target="Turkish" data-flag="🇹🇷" data-name="Turkish" onclick="selectLang(this)">🇹🇷<span class="flag-label">Turkish</span></button>
+    <button class="flag-btn" data-source="vi-VN" data-target="Vietnamese" data-flag="🇻🇳" data-name="Vietnamese" onclick="selectLang(this)">🇻🇳<span class="flag-label">Vietn.</span></button>
+    <button class="flag-btn" data-source="id-ID" data-target="Indonesian" data-flag="🇮🇩" data-name="Indonesian" onclick="selectLang(this)">🇮🇩<span class="flag-label">Indones.</span></button>
+    <button class="flag-btn" data-source="hi-IN" data-target="Hindi" data-flag="🇮🇳" data-name="Hindi" onclick="selectLang(this)">🇮🇳<span class="flag-label">Hindi</span></button>
     <button class="flag-btn" data-source="uk-UA" data-target="Ukrainian" data-flag="🇺🇦" data-name="Ukrainian" onclick="selectLang(this)">🇺🇦<span class="flag-label">Ukrain.</span></button>
+    <button class="flag-btn" data-source="th-TH" data-target="Thai" data-flag="🇹🇭" data-name="Thai" onclick="selectLang(this)">🇹🇭<span class="flag-label">Thai</span></button>
+    <!-- Tier 3: Decent -->
     <button class="flag-btn" data-source="el-GR" data-target="Greek" data-flag="🇬🇷" data-name="Greek" onclick="selectLang(this)">🇬🇷<span class="flag-label">Greek</span></button>
     <button class="flag-btn" data-source="he-IL" data-target="Hebrew" data-flag="🇮🇱" data-name="Hebrew" onclick="selectLang(this)">🇮🇱<span class="flag-label">Hebrew</span></button>
-    <button class="flag-btn" data-source="vi-VN" data-target="Vietnamese" data-flag="🇻🇳" data-name="Vietnamese" onclick="selectLang(this)">🇻🇳<span class="flag-label">Vietn.</span></button>
-    <button class="flag-btn" data-source="th-TH" data-target="Thai" data-flag="🇹🇭" data-name="Thai" onclick="selectLang(this)">🇹🇭<span class="flag-label">Thai</span></button>
-    <button class="flag-btn" data-source="id-ID" data-target="Indonesian" data-flag="🇮🇩" data-name="Indonesian" onclick="selectLang(this)">🇮🇩<span class="flag-label">Indones.</span></button>
-    <button class="flag-btn" data-source="ms-MY" data-target="Malay" data-flag="🇲🇾" data-name="Malay" onclick="selectLang(this)">🇲🇾<span class="flag-label">Malay</span></button>
     <button class="flag-btn" data-source="ro-RO" data-target="Romanian" data-flag="🇷🇴" data-name="Romanian" onclick="selectLang(this)">🇷🇴<span class="flag-label">Romanian</span></button>
     <button class="flag-btn" data-source="hu-HU" data-target="Hungarian" data-flag="🇭🇺" data-name="Hungarian" onclick="selectLang(this)">🇭🇺<span class="flag-label">Hungar.</span></button>
     <button class="flag-btn" data-source="cs-CZ" data-target="Czech" data-flag="🇨🇿" data-name="Czech" onclick="selectLang(this)">🇨🇿<span class="flag-label">Czech</span></button>
     <button class="flag-btn" data-source="da-DK" data-target="Danish" data-flag="🇩🇰" data-name="Danish" onclick="selectLang(this)">🇩🇰<span class="flag-label">Danish</span></button>
     <button class="flag-btn" data-source="fi-FI" data-target="Finnish" data-flag="🇫🇮" data-name="Finnish" onclick="selectLang(this)">🇫🇮<span class="flag-label">Finnish</span></button>
     <button class="flag-btn" data-source="nb-NO" data-target="Norwegian" data-flag="🇳🇴" data-name="Norwegian" onclick="selectLang(this)">🇳🇴<span class="flag-label">Norweg.</span></button>
+    <button class="flag-btn" data-source="bn-IN" data-target="Bengali" data-flag="🇧🇩" data-name="Bengali" onclick="selectLang(this)">🇧🇩<span class="flag-label">Bengali</span></button>
+    <button class="flag-btn" data-source="ur-PK" data-target="Urdu" data-flag="🇵🇰" data-name="Urdu" onclick="selectLang(this)">🇵🇰<span class="flag-label">Urdu</span></button>
+    <button class="flag-btn" data-source="fa-IR" data-target="Persian" data-flag="🇮🇷" data-name="Persian" onclick="selectLang(this)">🇮🇷<span class="flag-label">Persian</span></button>
+    <button class="flag-btn" data-source="ms-MY" data-target="Malay" data-flag="🇲🇾" data-name="Malay" onclick="selectLang(this)">🇲🇾<span class="flag-label">Malay</span></button>
+    <button class="flag-btn" data-source="ta-IN" data-target="Tamil" data-flag="🇱🇰" data-name="Tamil" onclick="selectLang(this)">🇱🇰<span class="flag-label">Tamil</span></button>
     <button class="flag-btn" data-source="sk-SK" data-target="Slovak" data-flag="🇸🇰" data-name="Slovak" onclick="selectLang(this)">🇸🇰<span class="flag-label">Slovak</span></button>
     <button class="flag-btn" data-source="bg-BG" data-target="Bulgarian" data-flag="🇧🇬" data-name="Bulgarian" onclick="selectLang(this)">🇧🇬<span class="flag-label">Bulgar.</span></button>
     <button class="flag-btn" data-source="hr-HR" data-target="Croatian" data-flag="🇭🇷" data-name="Croatian" onclick="selectLang(this)">🇭🇷<span class="flag-label">Croatian</span></button>
-    <button class="flag-btn" data-source="ca-ES" data-target="Catalan" data-flag="🏴" data-name="Catalan" onclick="selectLang(this)">🏴<span class="flag-label">Catalan</span></button>
-    <button class="flag-btn" data-source="af-ZA" data-target="Afrikaans" data-flag="🇿🇦" data-name="Afrikaans" onclick="selectLang(this)">🇿🇦<span class="flag-label">Afrikaans</span></button>
+    <!-- Tier 4: Limited -->
     <button class="flag-btn" data-source="sw-KE" data-target="Swahili" data-flag="🇰🇪" data-name="Swahili" onclick="selectLang(this)">🇰🇪<span class="flag-label">Swahili</span></button>
-    <button class="flag-btn" data-source="bn-IN" data-target="Bengali" data-flag="🇧🇩" data-name="Bengali" onclick="selectLang(this)">🇧🇩<span class="flag-label">Bengali</span></button>
-    <button class="flag-btn" data-source="ur-PK" data-target="Urdu" data-flag="🇵🇰" data-name="Urdu" onclick="selectLang(this)">🇵🇰<span class="flag-label">Urdu</span></button>
-    <button class="flag-btn" data-source="ta-IN" data-target="Tamil" data-flag="🇱🇰" data-name="Tamil" onclick="selectLang(this)">🇱🇰<span class="flag-label">Tamil</span></button>
-    <button class="flag-btn" data-source="fa-IR" data-target="Persian" data-flag="🇮🇷" data-name="Persian" onclick="selectLang(this)">🇮🇷<span class="flag-label">Persian</span></button>
+    <button class="flag-btn" data-source="af-ZA" data-target="Afrikaans" data-flag="🇿🇦" data-name="Afrikaans" onclick="selectLang(this)">🇿🇦<span class="flag-label">Afrikaans</span></button>
+    <button class="flag-btn" data-source="ca-ES" data-target="Catalan" data-flag="🏴" data-name="Catalan" onclick="selectLang(this)">🏴<span class="flag-label">Catalan</span></button>
     <button class="flag-btn" data-source="am-ET" data-target="Amharic" data-flag="🇪🇹" data-name="Amharic" onclick="selectLang(this)">🇪🇹<span class="flag-label">Amharic</span></button>
+    <button class="flag-btn" data-source="la" data-target="Latin" data-flag="⚜️" data-name="Latin" onclick="selectLang(this)">⚜️<span class="flag-label">Latin</span></button>
   </div>
 
   <!-- Hidden selects -->
@@ -587,7 +731,7 @@ textarea.text-box:focus { border-color: var(--mint-dark); }
     <option value="cs-CZ">Czech</option><option value="da-DK">Danish</option>
     <option value="fi-FI">Finnish</option><option value="nb-NO">Norwegian</option>
     <option value="sk-SK">Slovak</option><option value="bg-BG">Bulgarian</option>
-    <option value="hr-HR">Croatian</option><option value="ca-ES">Catalan</option>
+    <option value="hr-HR">Croatian</option><option value="ca-ES">Catalan</option><option value="la">Latin</option>
     <option value="af-ZA">Afrikaans</option><option value="sw-KE">Swahili</option>
     <option value="bn-IN">Bengali</option><option value="ur-PK">Urdu</option>
     <option value="ta-IN">Tamil</option><option value="fa-IR">Persian</option>
@@ -610,7 +754,7 @@ textarea.text-box:focus { border-color: var(--mint-dark); }
     <option value="Czech">Czech</option><option value="Danish">Danish</option>
     <option value="Finnish">Finnish</option><option value="Norwegian">Norwegian</option>
     <option value="Slovak">Slovak</option><option value="Bulgarian">Bulgarian</option>
-    <option value="Croatian">Croatian</option><option value="Catalan">Catalan</option>
+    <option value="Croatian">Croatian</option><option value="Catalan">Catalan</option><option value="Latin">Latin</option>
     <option value="Afrikaans">Afrikaans</option><option value="Swahili">Swahili</option>
     <option value="Bengali">Bengali</option><option value="Urdu">Urdu</option>
     <option value="Tamil">Tamil</option><option value="Persian">Persian</option>
@@ -685,6 +829,29 @@ textarea.text-box:focus { border-color: var(--mint-dark); }
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 8V1h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       Copy
     </button>
+  </div>
+
+  <!-- ASL fingerspelling panel -->
+  <div class="asl-panel" id="aslPanel">
+    <div class="asl-title">🤟 ASL Fingerspelling</div>
+    <div class="asl-letters" id="aslLetters"></div>
+  </div>
+
+  <!-- Text-to-text mode panel -->
+  <div id="t2tPanel" style="display:none; margin-top:16px;">
+    <div class="divider"><span class="divider-label">ASL / Text Mode</span></div>
+    <div class="t2t-label s1">🤟 <span id="t2tLabel1">Speaker 1</span> types here</div>
+    <textarea class="t2t-input" id="t2tInput1" placeholder="Type your message…" oninput="debounceT2T(1)"></textarea>
+    <div class="text-box" id="t2tOutput1" style="min-height:70px; margin-bottom:16px;">
+      <span style="color:var(--muted);font-style:italic;font-size:13px;" id="t2tPlaceholder1">Translation will appear here…</span>
+      <div id="t2tResult1" class="translation-result"></div>
+    </div>
+    <div class="t2t-label s2">🤟 <span id="t2tLabel2">Speaker 2</span> types here</div>
+    <textarea class="t2t-input" id="t2tInput2" placeholder="Type your message…" style="border-color:var(--mint-dark);" oninput="debounceT2T(2)"></textarea>
+    <div class="text-box" id="t2tOutput2" style="min-height:70px;">
+      <span style="color:var(--muted);font-style:italic;font-size:13px;" id="t2tPlaceholder2">Translation will appear here…</span>
+      <div id="t2tResult2" class="translation-result"></div>
+    </div>
   </div>
 
   <div class="controls">
@@ -919,7 +1086,7 @@ const LANG_CODE_MAP = {
   'tr-TR':'tr','uk-UA':'uk','el-GR':'el','he-IL':'iw','vi-VN':'vi',
   'th-TH':'th','id-ID':'id','ms-MY':'ms','ro-RO':'ro','hu-HU':'hu',
   'cs-CZ':'cs','da-DK':'da','fi-FI':'fi','nb-NO':'no','sk-SK':'sk',
-  'bg-BG':'bg','hr-HR':'hr','ca-ES':'ca','af-ZA':'af','sw-KE':'sw',
+  'bg-BG':'bg','hr-HR':'hr','ca-ES':'ca','la':'la','af-ZA':'af','sw-KE':'sw',
   'bn-IN':'bn','ur-PK':'ur','ta-IN':'ta','fa-IR':'fa','am-ET':'am'
 };
 const TARGET_CODE_MAP = {
@@ -929,7 +1096,7 @@ const TARGET_CODE_MAP = {
   'Swedish':'sv','Turkish':'tr','Greek':'el','Hebrew':'iw','Vietnamese':'vi',
   'Thai':'th','Indonesian':'id','Ukrainian':'uk','Malay':'ms','Romanian':'ro',
   'Hungarian':'hu','Czech':'cs','Danish':'da','Finnish':'fi','Norwegian':'no',
-  'Slovak':'sk','Bulgarian':'bg','Croatian':'hr','Catalan':'ca','Afrikaans':'af',
+  'Slovak':'sk','Bulgarian':'bg','Croatian':'hr','Catalan':'ca','Latin':'la','Afrikaans':'af',
   'Swahili':'sw','Bengali':'bn','Urdu':'ur','Tamil':'ta','Persian':'fa','Amharic':'am'
 };
 
@@ -976,6 +1143,14 @@ async function translateText(text) {
     document.getElementById('speakBtn').disabled = false;
     document.getElementById('copyBtn').style.display = 'flex';
     setStatus('ready', 'Translation complete ✓');
+    // Show ASL fingerspelling if English is involved
+    const tCode = TARGET_CODE_MAP[document.getElementById('targetLang').value] || '';
+    if (tCode === 'en') {
+      document.getElementById('aslPanel').classList.add('visible');
+      renderASL(translation);
+    } else {
+      document.getElementById('aslPanel').classList.remove('visible');
+    }
     // Auto-play via ElevenLabs
     if (!isIOS() || audioUnlocked) {
       speakTranslation();
@@ -1317,6 +1492,168 @@ if (sessionStorage.getItem('vi_unlocked') === '1') {
 
 
 
+// ── Accessibility ────────────────────────────────────────────────
+let isHighContrast = false;
+let currentFontSize = 'normal';
+let isT2TMode = false;
+
+function toggleContrast() {
+  isHighContrast = !isHighContrast;
+  document.body.classList.toggle('high-contrast', isHighContrast);
+  document.getElementById('btnContrast').classList.toggle('active', isHighContrast);
+}
+
+function setFontSize(size) {
+  currentFontSize = size;
+  const sizes = { normal: '15px', lg: '22px', xl: '32px' };
+  const btnIds = { normal: 'btnFontNormal', lg: 'btnFontLg', xl: 'btnFontXl' };
+
+  // Apply font size to all text output elements
+  const targets = [
+    document.getElementById('translationText'),
+    document.getElementById('transcriptText'),
+    document.getElementById('t2tResult1'),
+    document.getElementById('t2tResult2'),
+  ];
+  targets.forEach(el => { if (el) el.style.fontSize = sizes[size]; });
+
+  // Also resize the input/textarea areas
+  const inputs = [
+    document.getElementById('transcriptBox'),
+    document.getElementById('typeInput'),
+    document.getElementById('t2tInput1'),
+    document.getElementById('t2tInput2'),
+  ];
+  inputs.forEach(el => { if (el) el.style.fontSize = sizes[size]; });
+
+  // Update active button
+  ['btnFontNormal','btnFontLg','btnFontXl'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById(btnIds[size]).classList.add('active');
+}
+
+// ASL fingerspelling map
+const ASL_MAP = {
+  'A':'👊','B':'✋','C':'🤙','D':'👆','E':'🤛','F':'👌','G':'👉','H':'🤞',
+  'I':'🤙','J':'🤙','K':'✌️','L':'🤟','M':'✊','N':'✊','O':'👌','P':'👇',
+  'Q':'👇','R':'🤞','S':'✊','T':'✊','U':'✌️','V':'✌️','W':'🖖','X':'☝️',
+  'Y':'🤙','Z':'☝️'
+};
+
+function renderASL(text) {
+  const container = document.getElementById('aslLetters');
+  if (!container) return;
+  container.innerHTML = '';
+  const upper = text.toUpperCase().replace(/[^A-Z ]/g, '');
+  upper.split('').forEach(char => {
+    if (char === ' ') {
+      const sp = document.createElement('div');
+      sp.style.width = '16px';
+      container.appendChild(sp);
+      return;
+    }
+    if (ASL_MAP[char]) {
+      const el = document.createElement('div');
+      el.className = 'asl-letter';
+      el.innerHTML = '<div class="asl-hand">' + ASL_MAP[char] + '</div><div class="asl-char">' + char + '</div>';
+      container.appendChild(el);
+    }
+  });
+}
+
+function toggleT2T() {
+  isT2TMode = !isT2TMode;
+  document.getElementById('btnT2T').classList.toggle('active', isT2TMode);
+  document.getElementById('t2tPanel').style.display = isT2TMode ? 'block' : 'none';
+
+  if (isT2TMode) {
+    // Auto-set Speaker 1 to English
+    const sourceSel = document.getElementById('sourceLang');
+    sourceSel.value = 'en-US';
+    // Update flag UI and chips
+    const allBtns = document.querySelectorAll('.flag-btn');
+    allBtns.forEach(b => b.classList.remove('selected-source'));
+    const engBtn = document.querySelector('.flag-btn[data-source="en-US"]');
+    if (engBtn) {
+      engBtn.classList.add('selected-source');
+      document.getElementById('sourceFlag').textContent = '🇺🇸';
+      document.getElementById('sourceName').textContent = 'English';
+      if (document.getElementById('chip1Flag')) document.getElementById('chip1Flag').textContent = '🇺🇸';
+      if (document.getElementById('chip1Name')) document.getElementById('chip1Name').textContent = 'English';
+    }
+    // Update t2t labels
+    document.getElementById('t2tLabel1').textContent = 'English (Speaker 1)';
+    document.getElementById('t2tLabel2').textContent = document.getElementById('targetName').textContent + ' (Speaker 2)';
+    // Update Speaker 2 input placeholder to reflect their language
+    document.getElementById('t2tInput2').placeholder = 'Type in ' + document.getElementById('targetName').textContent + '…';
+    // Focus Speaker 2 language selector hint
+    setActiveSpeaker(2);
+    // Auto switch to type mode
+    setMode('type');
+  } else {
+    updateFlagUI();
+    setMode('mic');
+  }
+  // Show font buttons and contrast only on step 2 + ASL mode
+  updateA11yBar();
+}
+
+function updateA11yBar() {
+  const onStep2 = document.getElementById('step2Card').style.display !== 'none';
+  const show = isT2TMode && onStep2;
+  ['btnFontNormal','btnFontLg','btnFontXl','btnContrast'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? 'inline-block' : 'none';
+  });
+  const divider = document.getElementById('fontDivider');
+  if (divider) divider.style.display = show ? 'block' : 'none';
+}
+
+let t2tTimers = [null, null];
+function debounceT2T(speaker) {
+  clearTimeout(t2tTimers[speaker - 1]);
+  const inputId = 't2tInput' + speaker;
+  const text = document.getElementById(inputId).value.trim();
+  if (!text) return;
+  t2tTimers[speaker - 1] = setTimeout(() => translateT2T(speaker, text), 800);
+}
+
+async function translateT2T(speaker, text) {
+  // Speaker 1 types in source lang → translate to target
+  // Speaker 2 types in target lang → translate to source
+  const sourceSel = document.getElementById('sourceLang');
+  const targetSel = document.getElementById('targetLang');
+  const sourceLangCode = LANG_CODE_MAP[sourceSel.value] || 'en';
+  const targetLangName = targetSel.value;
+  const targetLangCode = TARGET_CODE_MAP[targetLangName] || 'es';
+
+  const fromCode = speaker === 1 ? sourceLangCode : targetLangCode;
+  const toCode   = speaker === 1 ? targetLangCode : sourceLangCode;
+  const resultId = 't2tResult' + speaker;
+  const placeholderId = 't2tPlaceholder' + speaker;
+
+  document.getElementById(placeholderId).style.display = 'none';
+  document.getElementById(resultId).textContent = 'Translating…';
+
+  try {
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl='
+      + fromCode + '&tl=' + toCode + '&dt=t&q=' + encodeURIComponent(text);
+    const response = await fetch(url);
+    const data = await response.json();
+    const translation = data[0].filter(i => i && i[0]).map(i => i[0]).join('').trim();
+    document.getElementById(resultId).textContent = translation;
+    // Show ASL if translation is in English
+    if (toCode === 'en' || fromCode === 'en') {
+      const engText = toCode === 'en' ? translation : text;
+      document.getElementById('aslPanel').classList.add('visible');
+      renderASL(engText);
+    }
+  } catch(e) {
+    document.getElementById(resultId).textContent = 'Translation failed.';
+  }
+}
+
 // ── Step navigation ───────────────────────────────────────────────
 function goToStep2() {
   document.getElementById('step1Card').style.display = 'none';
@@ -1331,7 +1668,9 @@ function goToStep2() {
   document.getElementById('chip2Name').textContent = document.getElementById('targetName').textContent;
 
   window.scrollTo(0, 0);
-  setMode('mic');
+  // Respect ASL mode — open to type if active, mic otherwise
+  setMode(isT2TMode ? 'type' : 'mic');
+  updateA11yBar();
 }
 
 function goToStep1() {
@@ -1340,6 +1679,7 @@ function goToStep1() {
   document.getElementById('pill1').className = 'step-pill active';
   document.getElementById('pill2').className = 'step-pill inactive';
   window.scrollTo(0, 0);
+  updateA11yBar();
   clearAll();
 }
 
@@ -1348,5 +1688,101 @@ document.getElementById('pill1').addEventListener('click', function() {
   if (this.classList.contains('done')) goToStep1();
 });
 </script>
+<!-- Accuracy modal -->
+<div class="modal-overlay" id="accuracyModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Translation Accuracy</div>
+      <button class="modal-close" onclick="document.getElementById('accuracyModal').classList.remove('open')">✕</button>
+    </div>
+
+    <div class="tier-block">
+      <div class="tier-header">
+        <div class="tier-dot" style="background:#1D9E75"></div>
+        <span class="tier-name">Excellent</span>
+        <span class="tier-desc">— near native quality</span>
+      </div>
+      <div class="tier-flags">
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇺🇸 English</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇲🇽 Spanish</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇫🇷 French</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇩🇪 German</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇧🇷 Portuguese</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇮🇹 Italian</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇯🇵 Japanese</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇨🇳 Chinese</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇰🇷 Korean</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇷🇺 Russian</span>
+        <span class="tier-pill" style="background:#E1F5EE;color:#0F6E56">🇸🇦 Arabic</span>
+      </div>
+    </div>
+
+    <div class="tier-block">
+      <div class="tier-header">
+        <div class="tier-dot" style="background:#378ADD"></div>
+        <span class="tier-name">Good</span>
+        <span class="tier-desc">— reliable for everyday use</span>
+      </div>
+      <div class="tier-flags">
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇳🇱 Dutch</span>
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇧🇪 Flemish</span>
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇵🇱 Polish</span>
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇸🇪 Swedish</span>
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇹🇷 Turkish</span>
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇻🇳 Vietnamese</span>
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇮🇩 Indonesian</span>
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇮🇳 Hindi</span>
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇺🇦 Ukrainian</span>
+        <span class="tier-pill" style="background:#E6F1FB;color:#185FA5">🇹🇭 Thai</span>
+      </div>
+    </div>
+
+    <div class="tier-block">
+      <div class="tier-header">
+        <div class="tier-dot" style="background:#BA7517"></div>
+        <span class="tier-name">Decent</span>
+        <span class="tier-desc">— workable, occasional errors</span>
+      </div>
+      <div class="tier-flags">
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇬🇷 Greek</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇮🇱 Hebrew</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇷🇴 Romanian</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇭🇺 Hungarian</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇨🇿 Czech</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇩🇰 Danish</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇫🇮 Finnish</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇳🇴 Norwegian</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇧🇩 Bengali</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇵🇰 Urdu</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇮🇷 Persian</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇲🇾 Malay</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇱🇰 Tamil</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇸🇰 Slovak</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇧🇬 Bulgarian</span>
+        <span class="tier-pill" style="background:#FAEEDA;color:#854F0B">🇭🇷 Croatian</span>
+      </div>
+    </div>
+
+    <div class="tier-block">
+      <div class="tier-header">
+        <div class="tier-dot" style="background:#A32D2D"></div>
+        <span class="tier-name">Limited</span>
+        <span class="tier-desc">— basic only, verify important translations</span>
+      </div>
+      <div class="tier-flags">
+        <span class="tier-pill" style="background:#FCEBEB;color:#791F1F">🇰🇪 Swahili</span>
+        <span class="tier-pill" style="background:#FCEBEB;color:#791F1F">🇿🇦 Afrikaans</span>
+        <span class="tier-pill" style="background:#FCEBEB;color:#791F1F">🏴 Catalan</span>
+        <span class="tier-pill" style="background:#FCEBEB;color:#791F1F">🇪🇹 Amharic</span>
+        <span class="tier-pill" style="background:#FCEBEB;color:#791F1F">⚜️ Latin</span>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);line-height:1.7;">
+      Powered by Google Translate. Accuracy improves automatically as Google updates their models.
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
