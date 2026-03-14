@@ -845,20 +845,14 @@ body.high-contrast h1 { color: #ffffff; }
     <div class="asl-letters" id="aslLetters"></div>
   </div>
 
-  <!-- Text-to-text mode panel -->
+  <!-- ASL mode panel — single clean layout -->
   <div id="t2tPanel" style="display:none; margin-top:16px;">
-    <div class="divider"><span class="divider-label">ASL / Text Mode</span></div>
-    <div class="t2t-label s1">🤟 <span id="t2tLabel1">Speaker 1</span> types here</div>
-    <textarea class="t2t-input" id="t2tInput1" placeholder="Type your message…" oninput="debounceT2T(1)"></textarea>
-    <div class="text-box" id="t2tOutput1" style="min-height:70px; margin-bottom:16px;">
-      <span style="color:var(--muted);font-style:italic;font-size:13px;" id="t2tPlaceholder1">Translation will appear here…</span>
+    <div class="divider"><span class="divider-label">ASL Mode</span></div>
+    <div class="t2t-label s1">🤟 <span id="t2tLabel1">ASL User</span> — type your message</div>
+    <textarea class="t2t-input" id="t2tInput1" placeholder="Type your message here…" oninput="debounceT2T(1)"></textarea>
+    <div class="text-box" id="t2tOutput1" style="min-height:80px; margin-bottom:0;">
+      <span style="color:var(--muted);font-style:italic;font-size:13px;" id="t2tPlaceholder1">Translation for the other person will appear here…</span>
       <div id="t2tResult1" class="translation-result"></div>
-    </div>
-    <div class="t2t-label s2">🤟 <span id="t2tLabel2">Speaker 2</span> types here</div>
-    <textarea class="t2t-input" id="t2tInput2" placeholder="Type your message…" style="border-color:var(--mint-dark);" oninput="debounceT2T(2)"></textarea>
-    <div class="text-box" id="t2tOutput2" style="min-height:70px;">
-      <span style="color:var(--muted);font-style:italic;font-size:13px;" id="t2tPlaceholder2">Translation will appear here…</span>
-      <div id="t2tResult2" class="translation-result"></div>
     </div>
   </div>
 
@@ -1151,7 +1145,7 @@ async function translateText(text) {
     document.getElementById('speakBtn').disabled = false;
     document.getElementById('copyBtn').style.display = 'flex';
     setStatus('ready', 'Translation complete ✓');
-    // Show ASL fingerspelling only if ASL mode is ON and translation is in English
+    // Show fingerspelling when ASL mode is ON and other person's speech is translated to English for ASL person
     const tCode = TARGET_CODE_MAP[document.getElementById('targetLang').value] || '';
     if (isT2TMode && tCode === 'en') {
       document.getElementById('aslPanel').classList.add('visible');
@@ -1614,10 +1608,10 @@ function toggleT2T() {
       if (document.getElementById('chip1Name')) document.getElementById('chip1Name').textContent = 'English';
     }
     // Update t2t labels
-    document.getElementById('t2tLabel1').textContent = 'English (Speaker 1)';
-    document.getElementById('t2tLabel2').textContent = document.getElementById('targetName').textContent + ' (Speaker 2)';
+    document.getElementById('t2tLabel1').textContent = 'ASL User';
+    
     // Update Speaker 2 input placeholder to reflect their language
-    document.getElementById('t2tInput2').placeholder = 'Type in ' + document.getElementById('targetName').textContent + '…';
+    
     // Focus Speaker 2 language selector hint
     setActiveSpeaker(2);
     // Auto switch to type mode
@@ -1643,46 +1637,43 @@ function updateA11yBar() {
   if (divider) divider.style.display = show ? 'block' : 'none';
 }
 
-let t2tTimers = [null, null];
+let t2tTimer = null;
 function debounceT2T(speaker) {
-  clearTimeout(t2tTimers[speaker - 1]);
-  const inputId = 't2tInput' + speaker;
-  const text = document.getElementById(inputId).value.trim();
+  clearTimeout(t2tTimer);
+  const text = document.getElementById('t2tInput1').value.trim();
   if (!text) return;
-  t2tTimers[speaker - 1] = setTimeout(() => translateT2T(speaker, text), 800);
+  t2tTimer = setTimeout(() => translateT2T(text), 800);
 }
 
-async function translateT2T(speaker, text) {
-  // Speaker 1 types in source lang → translate to target
-  // Speaker 2 types in target lang → translate to source
-  const sourceSel = document.getElementById('sourceLang');
-  const targetSel = document.getElementById('targetLang');
-  const sourceLangCode = LANG_CODE_MAP[sourceSel.value] || 'en';
-  const targetLangName = targetSel.value;
+async function translateT2T(text) {
+  // ASL person always types in English → translate to Speaker 2's language
+  const targetLangName = document.getElementById('targetLang').value;
   const targetLangCode = TARGET_CODE_MAP[targetLangName] || 'es';
 
-  const fromCode = speaker === 1 ? sourceLangCode : targetLangCode;
-  const toCode   = speaker === 1 ? targetLangCode : sourceLangCode;
-  const resultId = 't2tResult' + speaker;
-  const placeholderId = 't2tPlaceholder' + speaker;
+  const placeholder = document.getElementById('t2tPlaceholder1');
+  const result = document.getElementById('t2tResult1');
 
-  document.getElementById(placeholderId).style.display = 'none';
-  document.getElementById(resultId).textContent = 'Translating…';
+  placeholder.style.display = 'none';
+  result.textContent = 'Translating…';
 
   try {
-    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl='
-      + fromCode + '&tl=' + toCode + '&dt=t&q=' + encodeURIComponent(text);
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl='
+      + targetLangCode + '&dt=t&q=' + encodeURIComponent(text);
     const response = await fetch(url);
     const data = await response.json();
     const translation = data[0].filter(i => i && i[0]).map(i => i[0]).join('').trim();
-    document.getElementById(resultId).textContent = translation;
-    // Show ASL fingerspelling only if ASL mode is ON and translation is in English
-    if (isT2TMode && toCode === 'en') {
-      document.getElementById('aslPanel').classList.add('visible');
-      renderASL(translation);
-    }
+    result.textContent = translation;
+
+    // ASL person typed — hide fingerspelling (they already know ASL)
+    document.getElementById('aslPanel').classList.remove('visible');
+
+    // Clear the input after a short delay so it's ready for next message
+    setTimeout(() => {
+      document.getElementById('t2tInput1').value = '';
+    }, 1500);
+
   } catch(e) {
-    document.getElementById(resultId).textContent = 'Translation failed.';
+    result.textContent = 'Translation failed.';
   }
 }
 
