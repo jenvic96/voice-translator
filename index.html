@@ -1237,16 +1237,39 @@ async function speakTranslation() {
     audio.onended = () => URL.revokeObjectURL(audioUrl);
     audio.play();
   } catch (err) {
-    setError('Audio failed: ' + err.message + '. Using fallback voice.');
-    // Fallback to browser TTS
-    if (window.speechSynthesis) {
-      const utterance = new SpeechSynthesisUtterance(currentTranslation);
-      window.speechSynthesis.speak(utterance);
-    }
+    // ElevenLabs failed — silently fall back to browser voice
+    browserVoiceFallback();
   } finally {
     speakBtn.disabled = false;
     speakBtn.innerHTML = '<span>🔊</span> Play';
   }
+}
+
+function browserVoiceFallback() {
+  if (!currentTranslation || !window.speechSynthesis) return;
+  const utterance = new SpeechSynthesisUtterance(currentTranslation);
+  const targetLangName = document.getElementById('targetLang').value;
+  const langMap = {
+    'English':'en','Spanish':'es','French':'fr','German':'de','Italian':'it',
+    'Portuguese':'pt','Japanese':'ja','Chinese (Simplified)':'zh','Korean':'ko',
+    'Arabic':'ar','Russian':'ru','Hindi':'hi','Dutch':'nl','Polish':'pl',
+    'Swedish':'sv','Turkish':'tr','Greek':'el','Hebrew':'iw','Vietnamese':'vi',
+    'Thai':'th','Indonesian':'id','Ukrainian':'uk','Malay':'ms','Romanian':'ro',
+    'Hungarian':'hu','Czech':'cs','Danish':'da','Finnish':'fi','Norwegian':'no',
+    'Slovak':'sk','Bulgarian':'bg','Croatian':'hr','Catalan':'ca','Afrikaans':'af',
+    'Swahili':'sw','Bengali':'bn','Urdu':'ur','Tamil':'ta','Persian':'fa',
+    'Amharic':'am','Latin':'la','Dutch (Belgium)':'nl'
+  };
+  utterance.lang = langMap[targetLangName] || 'en';
+  const voices = window.speechSynthesis.getVoices();
+  const match = voices.find(v => v.lang.startsWith(utterance.lang)) || null;
+  if (match) utterance.voice = match;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 }
 
 // ── Clear / Copy / Swap ───────────────────────────────────────────
