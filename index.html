@@ -10,15 +10,15 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0f0a1a;
-    --panel: #1a1028;
-    --border: #2a1f3d;
-    --accent: #f59e0b;
-    --accent2: #fbbf24;
-    --green: #fde68a;
-    --text: #e8e8f0;
-    --muted: #6b6b88;
-    --danger: #f55b6a;
+    --bg: #e8f7f5;
+    --panel: #f0faf8;
+    --border: #b5ddd8;
+    --accent: #FFA4A4;
+    --accent2: #BADFDB;
+    --green: #BADFDB;
+    --text: #1a3835;
+    --muted: #7aaba6;
+    --danger: #e05555;
   }
 
   body {
@@ -39,7 +39,7 @@
     position: fixed;
     top: -200px; left: 50%; transform: translateX(-50%);
     width: 800px; height: 500px;
-    background: radial-gradient(ellipse, rgba(91,106,245,0.12) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(186,223,219,0.5) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -57,7 +57,7 @@
     font-size: 11px;
     font-family: 'DM Mono', monospace;
     letter-spacing: 0.25em;
-    color: var(--accent);
+    color: #FFA4A4;
     text-transform: uppercase;
     margin-bottom: 12px;
   }
@@ -66,7 +66,7 @@
     font-size: clamp(36px, 6vw, 64px);
     font-weight: 800;
     line-height: 1;
-    background: linear-gradient(135deg, #fff 30%, var(--accent2));
+    background: linear-gradient(135deg, #1a3835 30%, #FFA4A4);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -141,7 +141,7 @@
     transition: background 0.2s, color 0.2s, transform 0.3s;
     flex-shrink: 0;
   }
-  .swap-btn:hover { background: var(--accent); color: #fff; transform: rotate(180deg); }
+  .swap-btn:hover { background: #FFA4A4; color: #fff; transform: rotate(180deg); }
 
   .text-area {
     background: var(--bg);
@@ -218,14 +218,14 @@
     transition: background 0.2s, transform 0.15s;
   }
 
-  .mic-btn:hover { transform: translateY(-2px); background: #d97706; }
+  .mic-btn:hover { transform: translateY(-2px); background: #ff8f8f; }
   .mic-btn.recording { background: var(--danger); animation: pulse-ring 1.5s infinite; }
   .mic-btn.recording .mic-dot { animation: blink 0.8s infinite; }
 
   @keyframes pulse-ring {
-    0% { box-shadow: 0 0 0 0 rgba(245,91,106,0.5); }
-    70% { box-shadow: 0 0 0 14px rgba(245,91,106,0); }
-    100% { box-shadow: 0 0 0 0 rgba(245,91,106,0); }
+    0% { box-shadow: 0 0 0 0 rgba(255,164,164,0.5); }
+    70% { box-shadow: 0 0 0 14px rgba(255,164,164,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,164,164,0); }
   }
 
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
@@ -252,17 +252,17 @@
     border: 1px solid var(--border);
     border-radius: 50px;
     padding: 16px 28px;
-    color: var(--green);
+    color: #6dbfb8;
     font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 14px;
     cursor: pointer;
-    border-color: rgba(79,240,160,0.3);
+    border-color: rgba(186,223,219,0.5);
     transition: border-color 0.2s, background 0.2s;
     display: flex; align-items: center; gap: 8px;
   }
 
-  .speak-btn:hover { border-color: var(--green); background: rgba(79,240,160,0.07); }
+  .speak-btn:hover { border-color: #6dbfb8; background: rgba(79,240,160,0.07); }
   .speak-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
   .status-bar {
@@ -335,6 +335,53 @@
     50% { transform: scaleY(1); opacity: 1; }
   }
 
+  .lock-screen {
+    position: fixed; inset: 0; z-index: 999;
+    background: #e8f7f5;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; padding: 40px;
+  }
+
+  .lock-screen h2 {
+    font-size: 28px; font-weight: 800;
+    background: linear-gradient(135deg, #1a3835 30%, #FFA4A4);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .lock-screen p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: #6b6b88; margin-bottom: 8px;
+  }
+
+  .lock-input {
+    width: 100%; max-width: 320px;
+    background: #ffffff; border: 1px solid #e0d8c0;
+    border-radius: 12px; color: #3a3030;
+    font-family: 'DM Mono', monospace; font-size: 16px;
+    padding: 14px 18px; outline: none; text-align: center;
+    letter-spacing: 0.15em; transition: border-color 0.2s;
+  }
+
+  .lock-input:focus { border-color: #FFA4A4; }
+
+  .lock-btn {
+    width: 100%; max-width: 320px;
+    background: #FFA4A4; border: none; border-radius: 12px;
+    color: #ffffff; font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 16px; padding: 14px;
+    cursor: pointer; transition: background 0.2s;
+  }
+
+  .lock-btn:hover { background: #ff8f8f; }
+
+  .lock-error {
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    color: #f55b6a; min-height: 18px;
+  }
+
   .error-msg {
     color: var(--danger);
     font-family: 'DM Mono', monospace;
@@ -346,6 +393,15 @@
 </head>
 <body>
 <div class="grain"></div>
+
+<div class="lock-screen" id="lockScreen">
+  <div class="logo" style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:0.25em;color:#FFA4A4;text-transform:uppercase;margin-bottom:4px;">✦ Protected</div>
+  <h2>Voice Interpreter</h2>
+  <p>Enter the code to continue</p>
+  <input class="lock-input" type="password" id="lockInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()" />
+  <button class="lock-btn" onclick="checkPassword()">Unlock</button>
+  <div class="lock-error" id="lockError"></div>
+</div>
 
 <header>
   <div class="logo">✦ AI-Powered</div>
@@ -364,7 +420,7 @@
       <div class="lang-label">Speak in</div>
       <select id="sourceLang">
         <option value="en-US">🇺🇸 English (US)</option>
-        <option value="es-ES">🇪🇸 Spanish</option>
+        <option value="es-US">🇲🇽 Spanish (Latin America)</option>
         <option value="fr-FR">🇫🇷 French</option>
         <option value="de-DE">🇩🇪 German</option>
         <option value="it-IT">🇮🇹 Italian</option>
@@ -593,7 +649,7 @@ function stopRecording() {
 
 // ── Translation ───────────────────────────────────────────────────
 const SOURCE_MAP = {
-  'en-US':'English','es-ES':'Spanish','fr-FR':'French','de-DE':'German',
+  'en-US':'English','es-US':'Spanish','fr-FR':'French','de-DE':'German',
   'it-IT':'Italian','pt-BR':'Portuguese','ja-JP':'Japanese','zh-CN':'Chinese (Simplified)',
   'ko-KR':'Korean','ar-SA':'Arabic','ru-RU':'Russian','hi-IN':'Hindi',
   'nl-NL':'Dutch','pl-PL':'Polish','sv-SE':'Swedish'
@@ -601,7 +657,7 @@ const SOURCE_MAP = {
 
 // Language code maps for MyMemory API
 const LANG_CODE_MAP = {
-  'en-US':'en','es-ES':'es','fr-FR':'fr','de-DE':'de','it-IT':'it',
+  'en-US':'en','es-US':'es','fr-FR':'fr','de-DE':'de','it-IT':'it',
   'pt-BR':'pt','ja-JP':'ja','zh-CN':'zh','ko-KR':'ko','ar-SA':'ar',
   'ru-RU':'ru','hi-IN':'hi','nl-NL':'nl','pl-PL':'pl','sv-SE':'sv'
 };
@@ -652,6 +708,8 @@ async function translateText(text) {
     document.getElementById('copyBtn').style.display = 'flex';
     setStatus('ready', 'Translation complete ✓');
     speakTranslation();
+    // Auto-swap languages for the other person to reply
+    setTimeout(() => swapLangs(false), 1200);
   } catch (err) {
     document.getElementById('translationText').textContent = '';
     document.getElementById('translationPlaceholder').style.display = 'inline';
@@ -756,20 +814,20 @@ function copyTranslation() {
 }
 
 const REVERSE_MAP = {
-  'English':'en-US','Spanish':'es-ES','French':'fr-FR','German':'de-DE',
+  'English':'en-US','Spanish':'es-US','French':'fr-FR','German':'de-DE',
   'Italian':'it-IT','Portuguese':'pt-BR','Japanese':'ja-JP','Chinese (Simplified)':'zh-CN',
   'Korean':'ko-KR','Arabic':'ar-SA','Russian':'ru-RU','Hindi':'hi-IN',
   'Dutch':'nl-NL','Polish':'pl-PL','Swedish':'sv-SE'
 };
 
-function swapLangs() {
+function swapLangs(shouldClear = true) {
   const sourceSel = document.getElementById('sourceLang');
   const targetSel = document.getElementById('targetLang');
   const currentSourceName = SOURCE_MAP[sourceSel.value];
   const currentTargetName = targetSel.value;
   if (REVERSE_MAP[currentTargetName]) sourceSel.value = REVERSE_MAP[currentTargetName];
   if (currentSourceName) targetSel.value = currentSourceName;
-  clearAll();
+  if (shouldClear) clearAll();
 }
 
 // ── Init ──────────────────────────────────────────────────────────
@@ -813,6 +871,28 @@ function swapLangs() {
     setStatus('ready', 'Ready');
   }
 })();
+
+// ── Password protection ───────────────────────────────────────────
+const CORRECT_PASSWORD = '1996*';
+
+function checkPassword() {
+  const input = document.getElementById('lockInput').value;
+  if (input === CORRECT_PASSWORD) {
+    document.getElementById('lockScreen').style.display = 'none';
+    sessionStorage.setItem('vi_unlocked', '1');
+  } else {
+    const err = document.getElementById('lockError');
+    err.textContent = 'Incorrect code. Try again.';
+    document.getElementById('lockInput').value = '';
+    document.getElementById('lockInput').focus();
+    setTimeout(() => err.textContent = '', 3000);
+  }
+}
+
+// Stay unlocked for the session
+if (sessionStorage.getItem('vi_unlocked') === '1') {
+  document.getElementById('lockScreen').style.display = 'none';
+}
 </script>
 </body>
 </html>
