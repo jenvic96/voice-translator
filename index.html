@@ -613,11 +613,31 @@ function toggleRecording() {
   else startRecording();
 }
 
+function browserName() {
+  const ua = navigator.userAgent;
+  if (/Firefox/i.test(ua)) return 'firefox';
+  if (/OPR|Opera/i.test(ua)) return 'opera';
+  if (isIOS() || /Safari/i.test(ua) && !/Chrome/i.test(ua)) return 'safari';
+  if (/Chrome/i.test(ua)) return 'chrome';
+  return 'other';
+}
+
 function startRecording() {
-  if (!SpeechRecognition) {
-    setError('Speech recognition not supported. Try Chrome or Edge, or use Type mode.');
+  const browser = browserName();
+
+  // Firefox has no Speech Recognition at all
+  if (browser === 'firefox') {
+    setError('Firefox does not support voice input. Please use Type mode or switch to Chrome.');
+    setMode('type');
     return;
   }
+
+  if (!SpeechRecognition) {
+    setError('Voice input not supported in this browser. Use Type mode instead.');
+    setMode('type');
+    return;
+  }
+
   if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
     setError('Microphone requires HTTPS. Please open this file via a secure connection.');
     return;
@@ -632,6 +652,9 @@ function startRecording() {
   recognition.interimResults = true;
   recognition.continuous = false;
   recognition.maxAlternatives = 1;
+
+  let silenceTimer = null;
+  let lastTranscript = '';
 
   recognition.onstart = () => {
     isRecording = true;
@@ -649,26 +672,57 @@ function startRecording() {
       else interim += t;
     }
     const display = final || interim;
+    lastTranscript = display;
     document.getElementById('transcriptText').textContent = display;
     document.getElementById('transcriptPlaceholder').style.display = display ? 'none' : 'inline';
-    if (final) {
+
+    // On Safari/iOS, use silence threshold since onresult may not fire isFinal reliably
+    if (browser === 'safari' || isIOS()) {
+      clearTimeout(silenceTimer);
+      if (display) {
+        silenceTimer = setTimeout(() => {
+          if (lastTranscript) {
+            stopRecording();
+            translateText(lastTranscript.trim());
+          }
+        }, 750);
+      }
+    } else if (final) {
       stopRecording();
       translateText(final.trim());
     }
   };
 
   recognition.onerror = (e) => {
+    clearTimeout(silenceTimer);
     stopRecording();
     const msgs = {
       'no-speech'   : 'No speech detected. Try again.',
       'not-allowed' : 'Microphone access denied. Tap the 🔒 icon in your address bar to allow it.',
-      'network'     : 'Network error during recognition. Check your connection.',
+      'network'     : 'Network error. Check your connection and try again.',
       'aborted'     : '',
+      'audio-capture': 'No microphone found. Check your device settings.',
+      'service-not-allowed': 'Speech service blocked. Try reloading the page.',
     };
     setError(msgs[e.error] ?? 'Error: ' + e.error);
   };
 
-  recognition.onend = () => { if (isRecording) stopRecording(); };
+  recognition.onend = () => {
+    // Safari often fires onend before onresult — give it a moment
+    if (browser === 'safari' || isIOS()) {
+      setTimeout(() => {
+        if (isRecording && lastTranscript) {
+          stopRecording();
+          translateText(lastTranscript.trim());
+        } else if (isRecording) {
+          stopRecording();
+        }
+      }, 300);
+    } else {
+      if (isRecording) stopRecording();
+    }
+  };
+
   recognition.start();
 }
 
@@ -689,17 +743,17 @@ const SOURCE_MAP = {
   'nl-NL':'Dutch','pl-PL':'Polish','sv-SE':'Swedish'
 };
 
-// Language code maps for MyMemory API
+// Google Translate (no key needed — same engine as translate.google.com)
 const LANG_CODE_MAP = {
   'en-US':'en','es-US':'es','fr-FR':'fr','de-DE':'de','it-IT':'it',
-  'pt-BR':'pt','ja-JP':'ja','zh-CN':'zh','ko-KR':'ko','ar-SA':'ar',
+  'pt-BR':'pt','ja-JP':'ja','zh-CN':'zh-CN','ko-KR':'ko','ar-SA':'ar',
   'ru-RU':'ru','hi-IN':'hi','nl-NL':'nl','pl-PL':'pl','sv-SE':'sv'
 };
 const TARGET_CODE_MAP = {
   'English':'en','Spanish':'es','French':'fr','German':'de','Italian':'it',
-  'Portuguese':'pt','Japanese':'ja','Chinese (Simplified)':'zh','Korean':'ko',
+  'Portuguese':'pt','Japanese':'ja','Chinese (Simplified)':'zh-CN','Korean':'ko',
   'Arabic':'ar','Russian':'ru','Hindi':'hi','Dutch':'nl','Polish':'pl',
-  'Swedish':'sv','Turkish':'tr','Greek':'el','Hebrew':'he','Vietnamese':'vi',
+  'Swedish':'sv','Turkish':'tr','Greek':'el','Hebrew':'iw','Vietnamese':'vi',
   'Thai':'th','Indonesian':'id','Ukrainian':'uk'
 };
 
@@ -723,16 +777,21 @@ async function translateText(text) {
   document.getElementById('copyBtn').style.display = 'none';
 
   try {
-    const langpair = sourceLangCode + '|' + targetLangCode;
-    const url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + langpair;
-    const response = await fetch(url);
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl='
+      + sourceLangCode + '&tl=' + targetLangCode
+      + '&dt=t&q=' + encodeURIComponent(text);
 
+    const response = await fetch(url);
     if (!response.ok) throw new Error('HTTP ' + response.status);
     const data = await response.json();
 
-    if (data.responseStatus !== 200) throw new Error(data.responseDetails || 'Translation error');
+    // Google returns nested arrays — extract all translated segments
+    const translation = data[0]
+      .filter(item => item && item[0])
+      .map(item => item[0])
+      .join('')
+      .trim();
 
-    const translation = (data.responseData && data.responseData.translatedText || '').trim();
     if (!translation) throw new Error('Empty response');
 
     currentTranslation = translation;
@@ -741,13 +800,6 @@ async function translateText(text) {
     document.getElementById('speakBtn').disabled = false;
     document.getElementById('copyBtn').style.display = 'flex';
     setStatus('ready', 'Translation complete ✓');
-    if (!isIOS() || audioUnlocked) {
-      speakTranslation();
-    } else {
-      document.getElementById('iosBanner').style.display = 'block';
-    }
-    // Auto-swap languages for the other person to reply
-    setTimeout(() => swapLangs(false), 1200);
   } catch (err) {
     document.getElementById('translationText').textContent = '';
     document.getElementById('translationPlaceholder').style.display = 'inline';
@@ -755,6 +807,9 @@ async function translateText(text) {
     setStatus('', 'Ready');
   }
 }
+
+
+
 function translateTyped() {
   const text = document.getElementById('typeInput').value.trim();
   if (!text) { setError('Please type something first.'); return; }
