@@ -382,6 +382,35 @@
     color: #f55b6a; min-height: 18px;
   }
 
+  .ios-banner {
+    display: none;
+    max-width: 680px; width: 100%;
+    margin-bottom: 16px;
+    background: #f0faf8;
+    border: 1px solid #BADFDB;
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #1a3835;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .ios-unlock-btn {
+    display: inline-block;
+    margin-top: 10px;
+    background: #FFA4A4;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 20px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
   .error-msg {
     color: var(--danger);
     font-family: 'DM Mono', monospace;
@@ -412,6 +441,11 @@
 <div id="envBanner" style="display:none; max-width:680px; width:100%; margin-bottom:20px; background:#1e1215; border:1px solid #5b1a24; border-radius:14px; padding:14px 18px; font-family:'DM Mono',monospace; font-size:12px; color:#f55b6a; line-height:1.6;">
   ⚠️ <strong>Microphone access is blocked inside this preview.</strong><br>
   Download the HTML file and open it in <strong>Chrome or Edge</strong> for the full experience.
+</div>
+
+<div class="ios-banner" id="iosBanner">
+  🍎 <strong>iPhone detected</strong> — tap the button below to unlock audio playback first.<br>
+  <button class="ios-unlock-btn" onclick="unlockiOSAudio()">🔊 Tap to Enable Audio</button>
 </div>
 
 <div class="card">
@@ -707,7 +741,11 @@ async function translateText(text) {
     document.getElementById('speakBtn').disabled = false;
     document.getElementById('copyBtn').style.display = 'flex';
     setStatus('ready', 'Translation complete ✓');
-    speakTranslation();
+    if (!isIOS() || audioUnlocked) {
+      speakTranslation();
+    } else {
+      document.getElementById('iosBanner').style.display = 'block';
+    }
     // Auto-swap languages for the other person to reply
     setTimeout(() => swapLangs(false), 1200);
   } catch (err) {
@@ -830,6 +868,34 @@ function swapLangs(shouldClear = true) {
   if (shouldClear) clearAll();
 }
 
+// ── iOS Audio Unlock ─────────────────────────────────────────────
+let audioUnlocked = false;
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function unlockiOSAudio() {
+  // Play a silent audio context to unlock auto-play on iOS
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (AudioContext) {
+    const ctx = new AudioContext();
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+    ctx.resume().then(() => {
+      audioUnlocked = true;
+      document.getElementById('iosBanner').style.display = 'none';
+      setStatus('ready', 'Audio unlocked ✓');
+    });
+  } else {
+    audioUnlocked = true;
+    document.getElementById('iosBanner').style.display = 'none';
+  }
+}
+
 // ── Init ──────────────────────────────────────────────────────────
 (function init() {
   // Warn if not HTTPS (mic won't work)
@@ -849,6 +915,11 @@ function swapLangs(shouldClear = true) {
     document.getElementById('micBtn').style.cursor = 'not-allowed';
     setStatus('ready', 'Ready (preview mode)');
     return;
+  }
+
+  // Show iOS unlock banner if on iPhone/iPad
+  if (isIOS()) {
+    document.getElementById('iosBanner').style.display = 'block';
   }
 
   // Request mic permission on load so the browser prompts immediately
