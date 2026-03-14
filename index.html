@@ -590,6 +590,7 @@ body.high-contrast h1 { color: #ffffff; }
 
 <!-- Lock screen -->
 <div class="lock-screen" id="lockScreen">
+  <img src="https://jenvic96.github.io/voice-translator/icon-192.png" alt="Interpreter | Translator" style="width:80px;height:80px;border-radius:20px;margin-bottom:8px;box-shadow:0 4px 20px rgba(255,164,164,0.25);">
   <div class="logo-tag">✦ Protected</div>
   <h2>Interpreter <span style="color:var(--accent)">|</span> Translator</h2>
   <p>Enter the code to continue</p>
@@ -610,6 +611,7 @@ body.high-contrast h1 { color: #ffffff; }
 <!-- Header -->
 <header>
   <div class="logo-tag">✦ AI-Powered</div>
+  <img src="https://jenvic96.github.io/voice-translator/icon-192.png" alt="Interpreter | Translator" style="width:80px;height:80px;border-radius:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(255,164,164,0.25);">
   <h1>Interpreter <span style="color:var(--mint-dark)">|</span> <span>Translator</span></h1>
   <p class="subtitle">speak → interpret &nbsp;·&nbsp; write → translate</p>
 </header>
@@ -1814,7 +1816,7 @@ document.getElementById('pill1').addEventListener('click', function() {
 </div>
 
 <script>
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && location.hostname === 'jenvic96.github.io') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/voice-translator/sw.js')
       .catch(err => console.log('SW registration failed:', err));
