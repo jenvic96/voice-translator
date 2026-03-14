@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Voice Interpreter</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFA4A4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Voice Interpreter">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -1807,5 +1813,13 @@ document.getElementById('pill1').addEventListener('click', function() {
   </div>
 </div>
 
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/voice-translator/sw.js')
+      .catch(err => console.log('SW registration failed:', err));
+  });
+}
+</script>
 </body>
 </html>
